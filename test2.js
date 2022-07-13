@@ -6,7 +6,7 @@ const keySystem = require("./src/key/key.json");
 const keyBob = require("./src/key/bob.json");
 const keyAlice = require("./src/key/alice.json");
 
-function test() {
+function genKey() {
     var kp_A = jsSdk.Proxy.generate_key_pair();
     console.log("kp_A", kp_A);
     var sk_A = jsSdk.Proxy.to_hex(kp_A.get_private_key().to_bytes());
@@ -20,18 +20,7 @@ function test() {
 
     console.log("sk_B", sk_B);
     console.log("pk_B", pk_B);
-    //
-    // let obj = jsSdk.encryptData(keySystem.pk, "test data ahihi")
-    // console.log(obj)
-    //
-    // let decode = jsSdk.decryptData(sk_A, obj)
-    // console.log("decode",decode);
-    //
-    // let rk = jsSdk.generateReEncrytionKey(sk_A, pk_B);
-    // jsSdk.reEncryption(rk, obj)
-    //
-    // let decryptData = jsSdk.decryptData(sk_B, obj)
-    // console.log("decryptData",decryptData)
+
 }
 
 let keyAes = "11122233344455566677788822244455555555555555555231231321313aaaff";

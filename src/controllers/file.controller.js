@@ -51,7 +51,19 @@ module.exports = {
 
             });
 
-            return res.status(200).send({status: 200, msg: 'success'});
+            let fileInfo = await fileModel.findOne({
+                hashFile: hashFile,
+                name: nameFile,
+            });
+
+            return res.status(200).send({
+                status: 200, msg: 'success', data: {
+                    hashFile: fileInfo.hashFile,
+                    name: fileInfo.name,
+                    magnetId: fileInfo.magnetId,
+                    typeFile: fileInfo.typeFile,
+                },
+            });
 
         } catch (e) {
             return res.status(200).send({status: 500, msg: 'internal server'});

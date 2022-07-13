@@ -6,8 +6,8 @@ const fileController = require("../controllers/file.controller");
 const router = express.Router();
 
 router.post('/v1/gen-key-proxy', [
-        body('private_key_owner').notEmpty().isString().withMessage('private_key_owner empty'),
-        body('public_key_share').notEmpty().isString().withMessage('public_key_share empty'),
+        body('key').notEmpty().isString().withMessage('key empty'),
+        body('cipher').notEmpty().isString().withMessage('cipher empty'),
     ],
     proxyEncryptionController.genKeyProxy);
 

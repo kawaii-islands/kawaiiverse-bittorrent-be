@@ -64,8 +64,8 @@ async function test2() {
     console.log("rk", rk);
 
     // bob decode get key aes
-    let decryptData = jsSdk.decryptData(keyBob.sk, encodeKeyAes)
-    console.log("decryptData",decryptData)
+    let decryptData = jsSdk.decryptData(keyBob.sk, testData);
+    console.log("decryptData", decryptData);
 }
 
 test2();

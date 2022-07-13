@@ -3,6 +3,7 @@ const WebTorrent = require("webtorrent");
 const jsSdk = require('recrypt-js');
 
 const keySystem = require("../key/key.json");
+const keyBob = require('../key/bob.json');
 
 module.exports = {
     genKeyProxy: async (req, res, next) => {
@@ -13,15 +14,23 @@ module.exports = {
                 return res.status(200).send({status: 500, error});
             }
 
-            let reqData = req.body;
-            let decode = jsSdk.decryptData(keySystem.sk, reqData);
+            let keyEncode = req.body.key_encode;
+            let cipher = req.body.cipher;
+            let pkShare = req.body.pk_share;
+            let cipherAes = req.body.cipher_aes;
 
-            let rk = jsSdk.generateReEncrytionKey(keySystem.sk, pk_B);
-            jsSdk.reEncryption(rk, obj)
-            console.log("decode", decode);
+            let decodeGetSkAlice = jsSdk.decryptData(keySystem.sk, {
+                key: keyEncode,
+                cipher: cipher,
+            });
+
+            let rk = jsSdk.generateReEncrytionKey(decodeGetSkAlice, pkShare);
+            jsSdk.reEncryption(rk, cipherAes);
+
+            return res.status(200).send({status: 200, cipher: cipherAes});
 
         } catch (e) {
-            console.log(e);
+            return res.status(200).send({status: 500, msg: "internal server"});
         }
     },
 };

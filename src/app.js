@@ -36,7 +36,7 @@ app.use(compression());
 
 // enable cors
 app.use(cors("*"));
-// app.options('kawaii-islands.airight.io', cors());
+app.options('http://127.0.0.1:3000', cors());
 
 app.use(routes);
 

@@ -2,7 +2,6 @@ const {validationResult} = require('express-validator');
 const jsSdk = require('recrypt-js');
 
 const keySystem = require("../key/key.json");
-const keyBob = require('../key/bob.json');
 
 module.exports = {
     genKeyProxy: async (req, res, next) => {

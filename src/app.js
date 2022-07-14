@@ -35,7 +35,7 @@ app.use(mongoSanitize());
 app.use(compression());
 
 // enable cors
-app.use(cors());
+app.use(cors("*"));
 // app.options('kawaii-islands.airight.io', cors());
 
 app.use(routes);

@@ -35,8 +35,8 @@ app.use(mongoSanitize());
 app.use(compression());
 
 // enable cors
-app.use(cors("*"));
-app.options('http://127.0.0.1:3000', cors());
+// app.use(cors("*"));
+app.options('*', cors())
 
 app.use(routes);
 

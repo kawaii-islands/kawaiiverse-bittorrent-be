@@ -35,25 +35,25 @@ async function test2() {
     console.log("encrypted", encrypted);
 
     // alice encode key aes
-    let encodeKeyAes = jsSdk.encryptData(keyAlice.pk, keyAes);
+    let encodeKeyAes = jsSdk.encryptData(keySystem.pk, keyAes);
     console.log("encodeKeyAes", encodeKeyAes);
 
-    //alice encode chính private key của mình với khoá là khoá public của proxy
-    let encodeSkAlice = jsSdk.encryptData(keySystem.pk, keyAlice.sk);
-    console.log("encodeSkAlice", encodeSkAlice);
+//     //alice encode chính private key của mình với khoá là khoá public của proxy
+//     let encodeSkAlice = jsSdk.encryptData(keySystem.pk, keyAlice.sk);
+//     console.log("encodeSkAlice", encodeSkAlice);
 
     //server proxy nhận data và giải mã lấy sk của alice
 
-    let decodeGetSkAlice = jsSdk.decryptData(keySystem.sk, encodeSkAlice);
-    console.log("decodeGetSkAlice", decodeGetSkAlice);
+//     let decodeGetSkAlice = jsSdk.decryptData(keySystem.sk, encodeSkAlice);
+//     console.log("decodeGetSkAlice", decodeGetSkAlice);
 
-    let rk = jsSdk.generateReEncrytionKey(decodeGetSkAlice, keyBob.pk);
+    let rk = jsSdk.generateReEncrytionKey(keySystem.sk, keyBob.pk);
     jsSdk.reEncryption(rk, encodeKeyAes);
 
     console.log("rk", rk);
 
     // bob decode get key aes
-    let decryptData = jsSdk.decryptData(keyBob.sk, testData);
+    let decryptData = jsSdk.decryptData(keyBob.sk, encodeKeyAes);
     console.log("decryptData", decryptData);
 }
 

@@ -37,7 +37,8 @@ app.use(compression());
 // enable cors
 // app.use(cors("*"));
 app.use(cors({
-    origin: '*'
+    origin: '*',
+    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
 }));
 
 app.use(routes);

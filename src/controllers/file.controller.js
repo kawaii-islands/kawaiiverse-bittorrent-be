@@ -66,6 +66,7 @@ module.exports = {
             });
 
         } catch (e) {
+            console.log(e);
             return res.status(200).send({status: 500, msg: 'internal server'});
         }
     },

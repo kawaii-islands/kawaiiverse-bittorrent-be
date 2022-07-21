@@ -28,6 +28,8 @@ module.exports = {
                     new: true,
                     setDefaultsOnInsert: true,
                 });
+
+                console.log(`done download file ${torrent.name} - magnetId - ${magnetUrl}`);
             });
 
             return res.status(200).send({

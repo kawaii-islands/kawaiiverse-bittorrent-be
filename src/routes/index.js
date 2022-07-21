@@ -2,6 +2,7 @@ const express = require('express');
 const {body, validationResult, param} = require("express-validator");
 const proxyEncryptionController = require("../controllers/proxy.encryption.controller");
 const fileController = require("../controllers/file.controller");
+const seedFileController = require("../controllers/seed.file.controller");
 
 const router = express.Router();
 
@@ -13,4 +14,10 @@ router.post('/v1/gen-key-proxy', [
 
 router.post('/v1/update-file',
     fileController.updateFile);
+
+router.post('/v1/request-seed', [
+    body('magnet_url').notEmpty().isString().withMessage('magnet empty'),
+], seedFileController.seedFile);
+
 module.exports = router;
+

@@ -13,8 +13,8 @@ module.exports = {
             let magnetUrl = req.body.magnet_url;
 
             let parseManet = parseMagnetUri.parseMagnet(magnetUrl);
-
-            await requestSeedService.requestSeed(magnetUrl);
+            console.log(parseManet);
+            // await requestSeedService.requestSeed(magnetUrl);
 
             let isCheck = await fileModel.findOne({hashFile: parseManet.infoHash});
             if (isCheck) {

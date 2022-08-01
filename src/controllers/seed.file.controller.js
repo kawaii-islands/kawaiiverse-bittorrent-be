@@ -14,6 +14,8 @@ module.exports = {
 
             let parseManet = parseMagnetUri.parseMagnet(magnetUrl);
 
+            await requestSeedService.requestSeed(magnetUrl);
+
             let isCheck = await fileModel.findOne({hashFile: parseManet.infoHash});
             if (isCheck) {
                 return res.status(200).send({
@@ -43,7 +45,6 @@ module.exports = {
                 console.log(`done download file ${torrent.name} - magnetId - ${magnetUrl}`);
             });
 
-            await requestSeedService.requestSeed(magnetUrl);
 
             return res.status(200).send({
                 status: 200, msg: 'success', data: {

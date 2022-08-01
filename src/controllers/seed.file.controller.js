@@ -4,7 +4,8 @@ const path = require("path");
 const parseMagnetUri = require("parse-magnet-uri");
 const fileModel = require('../databases/file');
 const appDir = path.dirname(require.main.filename);
-console.log(appDir);
+
+const requestSeedService = require("../services/requestSeed");
 
 module.exports = {
     seedFile: async (req, res, next) => {
@@ -13,6 +14,16 @@ module.exports = {
 
             let parseManet = parseMagnetUri.parseMagnet(magnetUrl);
 
+            let isCheck = await fileModel.findOne({hashFile: parseManet.infoHash});
+            if (isCheck) {
+                return res.status(200).send({
+                    status: 200, msg: 'success', data: {
+                        name: parseManet.name,
+                        magnetId: magnetUrl,
+                        infoHash: parseManet.infoHash,
+                    },
+                });
+            }
             client.add(magnetUrl, {path: `${appDir}/storage`}, async (torrent) => {
                 let typeFile = torrent.name.substring(torrent.name.indexOf(".") + 1, torrent.length);
                 await fileModel.findOneAndUpdate({
@@ -31,6 +42,8 @@ module.exports = {
 
                 console.log(`done download file ${torrent.name} - magnetId - ${magnetUrl}`);
             });
+
+            await requestSeedService.requestSeed(magnetUrl);
 
             return res.status(200).send({
                 status: 200, msg: 'success', data: {

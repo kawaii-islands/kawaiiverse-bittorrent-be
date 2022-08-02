@@ -12,6 +12,13 @@ router.post('/v1/gen-key-proxy', [
     ],
     proxyEncryptionController.genKeyProxy);
 
+
+router.post('/v1/gen-encryption', [
+        body('rk').notEmpty().isString().withMessage('rk empty'),
+        body('obj').notEmpty().isObject().withMessage('obj empty'),
+    ],
+    proxyEncryptionController.genEncryption);
+
 router.post('/v1/update-file',
     fileController.updateFile);
 

@@ -13,11 +13,10 @@ module.exports = {
             let magnetUrl = req.body.magnet_url;
 
             let parseManet = parseMagnetUri.parseMagnet(magnetUrl);
-            console.log(parseManet);
             // await requestSeedService.requestSeed(magnetUrl);
 
-            let isCheck = await fileModel.findOne({hashFile: parseManet.infoHash});
-            if (isCheck) {
+            let getTorrent = await client.get(parseManet.infoHash);
+            if (!getTorrent){
                 return res.status(200).send({
                     status: 200, msg: 'success', data: {
                         name: parseManet.name,

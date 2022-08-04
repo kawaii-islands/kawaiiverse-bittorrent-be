@@ -1,8 +1,10 @@
 require('dotenv').config();
-const fileModel = require("../databases/file");
+const axios = require('axios');
+const FormData = require('form-data');
+const fs = require('fs');
+const data = new FormData();
 const mongoose = require('mongoose');
 const parseMagnetUri = require("parse-magnet-uri");
-const fs = require('fs');
 const fs1 = require('fs/promises');
 const appRoot = require('app-root-path');
 const directoryPath = appRoot.path + "/src/storage";
@@ -19,11 +21,19 @@ async function run() {
         }
 
         files.forEach(async function (file) {
-            console.log(file);
             try {
                 console.log("request seed", `${directoryPath}/${file}`);
-                const data = await fs1.readFile(`${directoryPath}/${file}`);
-                console.log(data);
+                data.append('file', fs.createReadStream(`${directoryPath}/${file}`));
+                let config = {
+                    method: 'post',
+                    url: 'http://127.0.0.1:9000/v1/update-file',
+                    headers: {
+                        ...data.getHeaders()
+                    },
+                    data : data
+                };
+
+                await axios(config)
             } catch (err) {
                 console.log(err);
             }

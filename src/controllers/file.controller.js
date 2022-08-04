@@ -1,5 +1,6 @@
 const formidable = require('formidable');
 const WebTorrent = require("webtorrent-hybrid");
+const parseTorrent = require('parse-torrent');
 const client = new WebTorrent();
 const createTorrent = require('create-torrent');
 const path = require("path");
@@ -31,23 +32,30 @@ module.exports = {
 
             await fs1.writeFile(`${appDir}/storage/${nameFile}`, dataFile);
 
-            client.seed(`${appDir}/storage/${nameFile}`, async (torrent) => {
-                console.log(`seed name ${nameFile} - hash - ${torrent.infoHash}`);
-                await fileModel.findOneAndUpdate({
-                    hashFile: torrent.infoHash,
-                    name: nameFile,
-                }, {
-                    hashFile: torrent.infoHash,
-                    name: nameFile,
-                    magnetId: torrent.magnetURI,
-                    typeFile: typeFile,
-                }, {
-                    upsert: true,
-                    new: true,
-                    setDefaultsOnInsert: true,
-                });
+            createTorrent(`${appDir}/storage/${nameFile}`, async (err, torrent) => {
+                let parsedTorrent = parseTorrent(torrent);
+                let isCheck = await client.get(parsedTorrent.infoHash);
+                if (!isCheck) {
+                    client.seed(`${appDir}/storage/${nameFile}`, async (torrent) => {
+                        console.log(`seed name ${nameFile} - hash - ${torrent.infoHash}`);
+                        await fileModel.findOneAndUpdate({
+                            hashFile: torrent.infoHash,
+                            name: nameFile,
+                        }, {
+                            hashFile: torrent.infoHash,
+                            name: nameFile,
+                            magnetId: torrent.magnetURI,
+                            typeFile: typeFile,
+                        }, {
+                            upsert: true,
+                            new: true,
+                            setDefaultsOnInsert: true,
+                        });
 
+                    });
+                }
             });
+
 
             let fileInfo = await fileModel.findOne({
                 name: nameFile,

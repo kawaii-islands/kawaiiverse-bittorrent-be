@@ -1,27 +1,35 @@
 require('dotenv').config();
-const WebTorrent = require("webtorrent-hybrid");
-const client = new WebTorrent();
-const fileModel = require("../databases/file")
+const fileModel = require("../databases/file");
 const mongoose = require('mongoose');
-const path = require("path");
 const parseMagnetUri = require("parse-magnet-uri");
-const appDir = path.dirname(require.main.filename);
+const fs = require('fs');
+const fs1 = require('fs/promises');
+const appRoot = require('app-root-path');
+const directoryPath = appRoot.path + "/src/storage";
 
-console.log(appDir);
 mongoose.connect(process.env.MONGO, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
 
-async function run(){
+async function run() {
+    fs.readdir(directoryPath, function (err, files) {
+        if (err) {
+            return console.log('Unable to scan directory: ' + err);
+        }
 
-    let fileData =  await fileModel.find()
-    console.log(fileData);
-    for (let i = 0; i < fileData.length; i++) {
-        client.seed(`appDir/storage/Trần Cảnh Tuấn 2.jpg`, function (torrent) {
-            console.log('Client is seeding ' + torrent.magnetURI)
-        })
-    }
+        files.forEach(async function (file) {
+            console.log(file);
+            try {
+                console.log("request seed", `${directoryPath}/${file}`);
+                const data = await fs1.readFile(`${directoryPath}/${file}`);
+                console.log(data);
+            } catch (err) {
+                console.log(err);
+            }
+        });
+    });
 
 }
-run()
+
+run();

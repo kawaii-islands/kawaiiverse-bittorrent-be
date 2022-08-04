@@ -2,6 +2,7 @@ const WebTorrent = require("webtorrent-hybrid");
 
 module.exports = {
     client: async () => {
-        return new WebTorrent();
+        const client = new WebTorrent();
+        return client;
     },
 };

@@ -24,22 +24,20 @@ module.exports = {
                 });
             });
 
-
             const typeFile = data.openedFiles[0].mimetype.substring(data.openedFiles[0].mimetype.indexOf("/") + 1, data.openedFiles[0].mimetype.length);
 
             let dataFilePath = await data.openedFiles[0].filepath;
             let dataFile = await fs.readFileSync(dataFilePath);
             let nameFile = data.openedFiles[0].originalFilename;
-            const hashFile = crypto.createHash('sha256').update(dataFile).digest('hex');
 
             await fs1.writeFile(`${appDir}/storage/${nameFile}`, dataFile);
 
-            client.seed(`${appDir}/storage/${nameFile}`, async (torrent) => {
+            await client.seed(`${appDir}/storage/${nameFile}`, async (torrent) => {
                 await fileModel.findOneAndUpdate({
-                    hashFile: hashFile,
+                    hashFile: torrent.infoHash,
                     name: nameFile,
                 }, {
-                    hashFile: hashFile,
+                    hashFile: torrent.infoHash,
                     name: nameFile,
                     magnetId: torrent.magnetURI,
                     typeFile: typeFile,
@@ -52,7 +50,6 @@ module.exports = {
             });
 
             let fileInfo = await fileModel.findOne({
-                hashFile: hashFile,
                 name: nameFile,
             });
 

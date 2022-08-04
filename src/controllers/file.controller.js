@@ -1,8 +1,7 @@
 const formidable = require('formidable');
-const {validationResult} = require('express-validator');
-const WebTorrent = require("webtorrent");
-const crypto = require("crypto");
+const WebTorrent = require("webtorrent-hybrid");
 const client = new WebTorrent();
+const createTorrent = require('create-torrent');
 const path = require("path");
 const {promises: fs1} = require('fs');
 const fs = require('fs');
@@ -32,7 +31,8 @@ module.exports = {
 
             await fs1.writeFile(`${appDir}/storage/${nameFile}`, dataFile);
 
-            await client.seed(`${appDir}/storage/${nameFile}`, async (torrent) => {
+            client.seed(`${appDir}/storage/${nameFile}`, async (torrent) => {
+                console.log(`seed name ${nameFile} - hash - ${torrent.infoHash}`);
                 await fileModel.findOneAndUpdate({
                     hashFile: torrent.infoHash,
                     name: nameFile,

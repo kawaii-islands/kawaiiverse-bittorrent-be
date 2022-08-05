@@ -28,6 +28,7 @@ module.exports = {
             }
             client.add(magnetUrl, {path: `${appDir}/storage`}, async (torrent) => {
                 let typeFile = torrent.name.substring(torrent.name.indexOf(".") + 1, torrent.length);
+                console.log(`seed success file name ${torrent.name} - hash - ${torrent.infoHash}`);
                 await fileModel.findOneAndUpdate({
                     hashFile: torrent.infoHash,
                     name: torrent.name,

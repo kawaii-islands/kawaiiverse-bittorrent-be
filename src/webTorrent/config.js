@@ -5,4 +5,10 @@ module.exports = {
         const client = new WebTorrent();
         return client;
     },
+    requiredOpts: () => {
+        return {
+            announce: ["ws://tracker.kawaii.global"], // list of tracker server urls
+            dht: false,
+        };
+    },
 };

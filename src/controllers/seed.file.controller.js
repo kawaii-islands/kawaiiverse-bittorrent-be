@@ -1,5 +1,6 @@
+const webTorrentConfig = require("../webTorrent/config");
 const WebTorrent = require("webtorrent-hybrid");
-const client = new WebTorrent();
+const client = new WebTorrent(webTorrentConfig.requiredOpts());
 const path = require("path");
 const parseMagnetUri = require("parse-magnet-uri");
 const fileModel = require('../databases/file');
@@ -16,7 +17,7 @@ module.exports = {
             await requestSeedService.requestSeed(magnetUrl);
 
             let getTorrent = await client.get(parseManet.infoHash);
-            if (!getTorrent){
+            if (!getTorrent) {
                 return res.status(200).send({
                     status: 200, msg: 'success', data: {
                         name: parseManet.name,
@@ -66,7 +67,7 @@ module.exports = {
             let parseManet = parseMagnetUri.parseMagnet(magnetUrl);
 
             let getTorrent = await client.get(parseManet.infoHash);
-            if (!getTorrent){
+            if (!getTorrent) {
                 return res.status(200).send({
                     status: 200, msg: 'success', data: {
                         name: parseManet.name,

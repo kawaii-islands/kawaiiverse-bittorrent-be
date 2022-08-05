@@ -1,7 +1,8 @@
+const webTorrentConfig = require("../webTorrent/config");
 const formidable = require('formidable');
 const WebTorrent = require("webtorrent-hybrid");
 const parseTorrent = require('parse-torrent');
-const client = new WebTorrent();
+const client = new WebTorrent(webTorrentConfig.requiredOpts());
 const createTorrent = require('create-torrent');
 const path = require("path");
 const {promises: fs1} = require('fs');
@@ -36,7 +37,10 @@ module.exports = {
                 let parsedTorrent = parseTorrent(torrent);
                 let isCheck = await client.get(parsedTorrent.infoHash);
                 if (!isCheck) {
-                    client.seed(`${appDir}/storage/${nameFile}`, async (torrent) => {
+                    client.seed(`${appDir}/storage/${nameFile}`, {
+                        private: true,
+                        announce: ["ws://tracker.kawaii.global"],
+                    }, async (torrent) => {
                         console.log(`seed name ${nameFile} - hash - ${torrent.infoHash}`);
                         await fileModel.findOneAndUpdate({
                             hashFile: torrent.infoHash,

@@ -11,7 +11,7 @@ module.exports = {
             for (let i = 0; i < hostConts.host.length; i++) {
                 let config = {
                     method: 'post',
-                    url: `${hostConts.host[i]}/v1/request-seed`,
+                    url: `${hostConts.host[i]}/v1/request-seed-server-to-server`,
                     headers: {
                         'Content-Type': 'application/json',
                     },

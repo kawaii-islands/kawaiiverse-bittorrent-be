@@ -13,7 +13,57 @@ module.exports = {
             let magnetUrl = req.body.magnet_url;
 
             let parseManet = parseMagnetUri.parseMagnet(magnetUrl);
-            // await requestSeedService.requestSeed(magnetUrl);
+            await requestSeedService.requestSeed(magnetUrl);
+
+            let getTorrent = await client.get(parseManet.infoHash);
+            if (!getTorrent){
+                return res.status(200).send({
+                    status: 200, msg: 'success', data: {
+                        name: parseManet.name,
+                        magnetId: magnetUrl,
+                        infoHash: parseManet.infoHash,
+                    },
+                });
+            }
+            client.add(magnetUrl, {path: `${appDir}/storage`}, async (torrent) => {
+                let typeFile = torrent.name.substring(torrent.name.indexOf(".") + 1, torrent.length);
+                await fileModel.findOneAndUpdate({
+                    hashFile: torrent.infoHash,
+                    name: torrent.name,
+                }, {
+                    hashFile: torrent.infoHash,
+                    name: torrent.name,
+                    magnetId: magnetUrl,
+                    typeFile: typeFile,
+                }, {
+                    upsert: true,
+                    new: true,
+                    setDefaultsOnInsert: true,
+                });
+
+                console.log(`done download file ${torrent.name} - magnetId - ${magnetUrl}`);
+            });
+
+
+            return res.status(200).send({
+                status: 200, msg: 'success', data: {
+                    name: parseManet.name,
+                    magnetId: magnetUrl,
+                    infoHash: parseManet.infoHash,
+                },
+            });
+        } catch (e) {
+            console.log(e);
+            return res.status(200).send({
+                status: 500, msg: "internal server",
+            });
+        }
+    },
+    seedFileServerToServer: async (req, res, next) => {
+        try {
+            let magnetUrl = req.body.magnet_url;
+
+            let parseManet = parseMagnetUri.parseMagnet(magnetUrl);
 
             let getTorrent = await client.get(parseManet.infoHash);
             if (!getTorrent){

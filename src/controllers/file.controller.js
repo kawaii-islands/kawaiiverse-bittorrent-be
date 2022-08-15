@@ -10,6 +10,7 @@ const fs = require('fs');
 const appDir = path.dirname(require.main.filename);
 
 const fileModel = require("../databases/file");
+const util = require('util');
 
 module.exports = {
     updateFile: async (req, res, next) => {
@@ -33,44 +34,47 @@ module.exports = {
 
             await fs1.writeFile(`${appDir}/storage/${nameFile}`, dataFile);
 
-            createTorrent(`${appDir}/storage/${nameFile}`, async (err, torrent) => {
-                let parsedTorrent = parseTorrent(torrent);
-                let isCheck = await client.get(parsedTorrent.infoHash);
-                if (!isCheck) {
-                    client.seed(`${appDir}/storage/${nameFile}`, {
-                        private: true,
-                        announce: ["ws://tracker.kawaii.global"],
-                    }, async (torrent) => {
-                        console.log(`seed name ${nameFile} - hash - ${torrent.infoHash}`);
-                        await fileModel.findOneAndUpdate({
-                            hashFile: torrent.infoHash,
-                            name: nameFile,
-                        }, {
-                            hashFile: torrent.infoHash,
-                            name: nameFile,
-                            magnetId: torrent.magnetURI,
-                            typeFile: typeFile,
-                        }, {
-                            upsert: true,
-                            new: true,
-                            setDefaultsOnInsert: true,
-                        });
-
-                    });
-                }
-            });
-
-
+            const createTorrentPromise = util.promisify(createTorrent);
+            let torrent = await createTorrentPromise(`${appDir}/storage/${nameFile}`);
+            let parsedTorrent = parseTorrent(torrent);
+            let isCheck = await client.get(parsedTorrent.infoHash);
+            if (!isCheck) {
+                torrent = await seedPending(`${appDir}/storage/${nameFile}`);
+                console.log(`seed name ${nameFile} - hash - ${torrent.infoHash}`);
+                await fileModel.findOneAndUpdate({
+                    hashFile: torrent.infoHash,
+                    name: nameFile,
+                }, {
+                    hashFile: torrent.infoHash,
+                    name: nameFile,
+                    magnetId: torrent.magnetURI,
+                    typeFile: typeFile,
+                }, {
+                    upsert: true,
+                    new: true,
+                    setDefaultsOnInsert: true,
+                });
+                return res.status(200).send({
+                    status: 200, msg: 'success', data: {
+                        hashFile: torrent.infoHash,
+                        name: nameFile,
+                        magnetId: torrent.magnetURI,
+                        typeFile: typeFile,
+                    },
+                });
+            }
+            console.log(parsedTorrent.infoHash);
             let fileInfo = await fileModel.findOne({
-                name: nameFile,
+                hashFile: parsedTorrent.infoHash,
             });
+
 
             return res.status(200).send({
                 status: 200, msg: 'success', data: {
-                    hashFile: fileInfo.hashFile,
-                    name: fileInfo.name,
+                    hashFile: parsedTorrent.infoHash,
+                    name: nameFile,
                     magnetId: fileInfo.magnetId,
-                    typeFile: fileInfo.typeFile,
+                    typeFile: typeFile,
                 },
             });
 
@@ -80,3 +84,11 @@ module.exports = {
         }
     },
 };
+
+async function seedPending(url) {
+    return new Promise((resolve, reject) => {
+        client.seed(url, async (torrent) => {
+            resolve(torrent);
+        });
+    });
+}

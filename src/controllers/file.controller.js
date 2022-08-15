@@ -11,6 +11,7 @@ const appDir = path.dirname(require.main.filename);
 
 const fileModel = require("../databases/file");
 const util = require('util');
+const requestSeedService = require('../services/requestSeed');
 
 module.exports = {
     updateFile: async (req, res, next) => {
@@ -41,6 +42,7 @@ module.exports = {
             if (!isCheck) {
                 torrent = await seedPending(`${appDir}/storage/${nameFile}`);
                 console.log(`seed name ${nameFile} - hash - ${torrent.infoHash}`);
+                await requestSeedService.requestSeed(torrent.magnetURI);
                 await fileModel.findOneAndUpdate({
                     hashFile: torrent.infoHash,
                     name: nameFile,

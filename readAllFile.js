@@ -11,7 +11,7 @@ fs.readdir(directoryPath, function (err, files) {
     }
     //listing all files using forEach
     files.forEach(function (file) {
-        // Do whatever you want to do with the file
+        // Do whatever you want to do with the google-storage
         console.log(file);
     });
 });

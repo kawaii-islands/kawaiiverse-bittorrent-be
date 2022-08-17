@@ -19,7 +19,7 @@ router.post('/v1/gen-encryption', [
     ],
     proxyEncryptionController.genEncryption);
 
-router.post('/v1/update-file',
+router.post('/v1/update-google-storage',
     fileController.updateFile);
 
 router.post('/v1/request-seed', [

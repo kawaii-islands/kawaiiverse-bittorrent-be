@@ -5,19 +5,19 @@ const path = require("path");
 const parseMagnetUri = require("parse-magnet-uri");
 const fileModel = require('../databases/file');
 const appDir = path.dirname(require.main.filename);
-
+const googleStorageService = require("../services/google-storage");
 const requestSeedService = require("../services/requestSeed");
+const {promises: fs1} = require('fs');
 
 module.exports = {
     seedFile: async (req, res, next) => {
         try {
             let magnetUrl = req.body.magnet_url;
-
             let parseManet = parseMagnetUri.parseMagnet(magnetUrl);
             await requestSeedService.requestSeed(magnetUrl);
-
             let getTorrent = await client.get(parseManet.infoHash);
-            if (!getTorrent) {
+            if (getTorrent != null) {
+                console.log(`already seed - ${parseManet.infoHash}`);
                 return res.status(200).send({
                     status: 200, msg: 'success', data: {
                         name: parseManet.name,
@@ -26,27 +26,13 @@ module.exports = {
                     },
                 });
             }
-            client.add(magnetUrl, {path: `${appDir}/storage`}, async (torrent) => {
-                let typeFile = torrent.name.substring(torrent.name.indexOf(".") + 1, torrent.length);
-                console.log(`seed success file name ${torrent.name} - hash - ${torrent.infoHash}`);
-                await fileModel.findOneAndUpdate({
-                    hashFile: torrent.infoHash,
-                    name: torrent.name,
-                }, {
-                    hashFile: torrent.infoHash,
-                    name: torrent.name,
-                    magnetId: magnetUrl,
-                    typeFile: typeFile,
-                }, {
-                    upsert: true,
-                    new: true,
-                    setDefaultsOnInsert: true,
+
+            let result = await addPending(magnetUrl, parseManet.infoHash);
+            if (typeof result == "string") {
+                return res.status(200).send({
+                    status: 500, msg: result,
                 });
-
-                console.log(`done download file ${torrent.name} - magnetId - ${magnetUrl}`);
-            });
-
-
+            }
             return res.status(200).send({
                 status: 200, msg: 'success', data: {
                     name: parseManet.name,
@@ -112,3 +98,16 @@ module.exports = {
         }
     },
 };
+
+async function addPending(url, hash) {
+    return new Promise((resolve, reject) => {
+        client.add(url, {path: `${appDir}/storage/${hash}`}, async (torrent) => {
+            let saveFileToGoogle = await googleStorageService.uploadFile(`${appDir}/storage/${hash}/${torrent.name}`, `${hash}/${torrent.name}`);
+            if (saveFileToGoogle != null) {
+                resolve(`have error when save file to service google - ${saveFileToGoogle}`);
+            }
+            console.log(`done download file ${torrent.name} - magnetId - ${url}`);
+            resolve(torrent);
+        });
+    });
+}

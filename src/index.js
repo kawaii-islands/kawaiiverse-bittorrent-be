@@ -1,15 +1,23 @@
 const mongoose = require('mongoose');
 const app = require('./app');
+const http = require('http');
 const config = require('./config/init');
 const logger = require('./config/logger');
+const socketIO = require('socket.io');
 
-let server;
+let server = http.createServer(app);
+let io = socketIO(server);
+
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
-  logger.info('Connected to MongoDB');
-  server = app.listen(config.port, () => {
-    logger.info(`Listening to port ${config.port}`);
-  });
+    logger.info('Connected to MongoDB');
+    io.on('connection', (socket) => {
+        console.log('New user connected');
+    });
+    server = server.listen(config.port, () => {
+        logger.info(`Listening to port ${config.port}`);
+    });
 });
+
 
 const exitHandler = () => {
     if (server) {
@@ -36,3 +44,7 @@ process.on('SIGTERM', () => {
         server.close();
     }
 });
+
+module.exports = {
+    io: io,
+};

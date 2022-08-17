@@ -18,6 +18,7 @@ mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
     });
 });
 
+app.io = io
 
 const exitHandler = () => {
     if (server) {
@@ -44,7 +45,3 @@ process.on('SIGTERM', () => {
         server.close();
     }
 });
-
-module.exports = {
-    io: io,
-};

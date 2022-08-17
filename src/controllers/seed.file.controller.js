@@ -17,6 +17,7 @@ module.exports = {
             await requestSeedService.requestSeed(magnetUrl);
             let getTorrent = await client.get(parseManet.infoHash);
             if (getTorrent != null) {
+                req.app.io.emit(`seed-done/${parseManet.infoHash}`, {msg: "success"});
                 console.log(`already seed - ${parseManet.infoHash}`);
                 return res.status(200).send({
                     status: 200, msg: 'success', data: {
@@ -33,6 +34,7 @@ module.exports = {
                     status: 500, msg: result,
                 });
             }
+            req.app.io.emit(`seed-done/${parseManet.infoHash}`, {msg: "success"});
             return res.status(200).send({
                 status: 200, msg: 'success', data: {
                     name: parseManet.name,

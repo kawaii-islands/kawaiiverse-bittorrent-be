@@ -6,9 +6,6 @@ module.exports = {
         return client;
     },
     requiredOpts: () => {
-        return {
-            announce: ["ws://tracker.kawaii.global"], // list of tracker server urls
-            dht: false,
-        };
+        return {dht: false, lsd: false};
     },
 };

@@ -103,7 +103,7 @@ module.exports = {
 
 async function addPending(req, url, hash) {
     return new Promise((resolve, reject) => {
-        client.add(url, {}, async (torrent) => {
+        client.add(url, {private: true}, async (torrent) => {
             torrent.on('done', function () {
                 console.log(`done download file ${torrent.name} - magnetId - ${url}`);
                 const files = torrent.files;

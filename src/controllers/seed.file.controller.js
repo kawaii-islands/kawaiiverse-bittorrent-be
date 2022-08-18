@@ -102,7 +102,7 @@ module.exports = {
 
 async function addPending(req, url, hash) {
     return new Promise((resolve, reject) => {
-        client.add(url, {path: `${appDir}/storage/${hash}`}, async (torrent) => {
+        client.add(url, {path: `${appDir}/storage/${hash}`, private: true}, async (torrent) => {
             let saveFileToGoogle = await googleStorageService.uploadFile(`${appDir}/storage/${hash}/${torrent.name}`, `${hash}/${torrent.name}`);
             if (saveFileToGoogle != null) {
                 resolve(`have error when save file to service google - ${saveFileToGoogle}`);

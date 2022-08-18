@@ -28,13 +28,12 @@ module.exports = {
                 });
             }
 
-            let result = await addPending(magnetUrl, parseManet.infoHash);
+            let result = await addPending(req, magnetUrl, parseManet.infoHash);
             if (typeof result == "string") {
                 return res.status(200).send({
                     status: 500, msg: result,
                 });
             }
-            req.app.io.emit(`seed-done/${parseManet.infoHash}`, {msg: "success"});
             return res.status(200).send({
                 status: 200, msg: 'success', data: {
                     name: parseManet.name,
@@ -101,14 +100,17 @@ module.exports = {
     },
 };
 
-async function addPending(url, hash) {
+async function addPending(req, url, hash) {
     return new Promise((resolve, reject) => {
         client.add(url, {path: `${appDir}/storage/${hash}`}, async (torrent) => {
             let saveFileToGoogle = await googleStorageService.uploadFile(`${appDir}/storage/${hash}/${torrent.name}`, `${hash}/${torrent.name}`);
             if (saveFileToGoogle != null) {
                 resolve(`have error when save file to service google - ${saveFileToGoogle}`);
             }
-            console.log(`done download file ${torrent.name} - magnetId - ${url}`);
+            torrent.on('done', function () {
+                console.log(`done download file ${torrent.name} - magnetId - ${url}`);
+                req.app.io.emit(`seed-done/${torrent.infoHash}`, {msg: "success"});
+            });
             resolve(torrent);
         });
     });

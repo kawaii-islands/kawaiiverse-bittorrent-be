@@ -2,6 +2,7 @@ const webTorrentConfig = require("../webTorrent/config");
 const WebTorrent = require("webtorrent-hybrid");
 const client = new WebTorrent(webTorrentConfig.requiredOpts());
 const path = require("path");
+const fs = require("fs");
 const parseMagnetUri = require("parse-magnet-uri");
 const fileModel = require('../databases/file');
 const appDir = path.dirname(require.main.filename);
@@ -102,13 +103,13 @@ module.exports = {
 
 async function addPending(req, url, hash) {
     return new Promise((resolve, reject) => {
-        client.add(url, {path: `${appDir}/storage/${hash}`}, async (torrent) => {
-            let saveFileToGoogle = await googleStorageService.uploadFile(`${appDir}/storage/${hash}/${torrent.name}`, `${hash}/${torrent.name}`);
-            if (saveFileToGoogle != null) {
-                resolve(`have error when save file to service google - ${saveFileToGoogle}`);
-            }
+        client.add(url, {}, async (torrent) => {
             torrent.on('done', function () {
                 console.log(`done download file ${torrent.name} - magnetId - ${url}`);
+                const files = torrent.files;
+                files.forEach(async function (file) {
+                    await googleStorageService.uploadFile(`${file._torrent.path}/${file.name}`, `${hash}/${file.name}`);
+                });
                 req.app.io.emit(`seed-done/${torrent.infoHash}`, {msg: "success"});
             });
             resolve(torrent);

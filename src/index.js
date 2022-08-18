@@ -6,7 +6,11 @@ const logger = require('./config/logger');
 const socketIO = require('socket.io');
 
 let server = http.createServer(app);
-let io = socketIO(server);
+let io = socketIO(server, {
+    cors: {
+        origin: '*',
+    },
+});
 
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
     logger.info('Connected to MongoDB');
@@ -18,7 +22,7 @@ mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
     });
 });
 
-app.io = io
+app.io = io;
 
 const exitHandler = () => {
     if (server) {

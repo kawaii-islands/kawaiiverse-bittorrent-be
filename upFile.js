@@ -5,10 +5,10 @@
 const bucketName = 'storage.kawaii.global';
 
 // The path to your google-storage to upload
-const filePath = '/Users/admin/Desktop/This-pc/orai/kawaiiverse-bittorrent-be/1.png';
+const filePath = '/Users/admin/Desktop/This-pc/orai/kawaiiverse-bittorrent-be/file/photo_2022-08-13 00.26.49 copy 2.jpeg';
 
 // The new ID for your GCS google-storage
-const destFileName = 'canhtuan2.png';
+const destFileName = 'file/photo_2022-08-13 00.26.49 copy 2.jpeg';
 
 // Imports the Google Cloud client library
 const {Storage} = require('@google-cloud/storage');

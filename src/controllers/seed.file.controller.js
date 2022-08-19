@@ -56,8 +56,8 @@ module.exports = {
             let parseManet = parseMagnetUri.parseMagnet(magnetUrl);
 
             let getTorrent = await client.get(parseManet.infoHash);
-            console.log("getTorrent",getTorrent);
-            if (!getTorrent) {
+            console.log("getTorrent", getTorrent);
+            if (getTorrent != null) {
                 return res.status(200).send({
                     status: 200, msg: 'success', data: {
                         name: parseManet.name,

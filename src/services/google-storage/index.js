@@ -18,8 +18,9 @@ module.exports = {
             }
 
             uploadFile().catch(console.error);
-            return null
+            return null;
         } catch (e) {
+            console.log("e-google storage", e);
             return e;
         }
     },

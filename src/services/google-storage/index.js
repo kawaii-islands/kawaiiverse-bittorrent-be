@@ -5,6 +5,7 @@ const appDir = path.dirname(require.main.filename);
 module.exports = {
     uploadFile: async (url_file, name) => {
         try {
+            console.log("vao day check log");
             const filePath = url_file;
             const nameSave = name;
             const storage = new Storage({keyFilename: `${appDir}/key/kawaii-studio-google-storage.json`});

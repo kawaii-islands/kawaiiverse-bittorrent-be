@@ -177,7 +177,7 @@ async function addPending(req, url, parseManet) {
 
 async function seedPending(url, infoFile) {
     return new Promise(async (resolve, reject) => {
-        let contents = await fs.createReadStream(url);
+        let contents = await fs.readFileSync(url);
         let encodeTorrent = await createTorrentPromise(contents, {
             name: infoFile.name,
             private: true,

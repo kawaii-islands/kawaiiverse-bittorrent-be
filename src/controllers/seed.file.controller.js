@@ -9,6 +9,11 @@ const appDir = path.dirname(require.main.filename);
 const googleStorageService = require("../services/google-storage");
 const requestSeedService = require("../services/requestSeed");
 const {promises: fs1} = require('fs');
+const formidable = require('formidable');
+const util = require('util');
+const createTorrent = require('create-torrent');
+const parseTorrent = require('parse-torrent');
+const createTorrentPromise = util.promisify(createTorrent);
 
 module.exports = {
     seedFile: async (req, res, next) => {
@@ -100,6 +105,49 @@ module.exports = {
             });
         }
     },
+    seedBackup: async (req, res, next) => {
+        try {
+            let form = new formidable.IncomingForm();
+            let formData = await new Promise(
+                function (resolve, reject) {
+                    form.parse(req, (err, fields, files) => {
+                        if (err) reject(err);
+                        else resolve([fields, files]);
+                    });
+                });
+            let tracker;
+            let filePath = [];
+            for (let i = 0; i < formData.length; i++) {
+                try {
+                    if (formData[i].hasOwnProperty('tracker') === true) {
+                        tracker = JSON.parse(formData[i].tracker);
+                    } else {
+                        filePath.push({
+                            path: formData[i].file.filepath,
+                            name: formData[i].file.originalFilename,
+                        });
+                    }
+                } catch (e) {
+                    continue;
+                }
+            }
+
+            //seed file
+            for (let i = 0; i < filePath.length; i++) {
+                let torrent = await seedPending(filePath[i].path, filePath[i].name, tracker);
+                console.log("torrent.magnetId", torrent.magnetURI);
+                filePath[i].magnetURI = torrent.magnetURI;
+            }
+            return res.status(200).send({
+                status: 200, data: filePath,
+            });
+        } catch (e) {
+            console.log(e);
+            return res.status(200).send({
+                status: 500, msg: "internal server",
+            });
+        }
+    },
 };
 
 async function addPending(req, url, hash) {
@@ -115,5 +163,31 @@ async function addPending(req, url, hash) {
             });
             resolve(torrent);
         });
+    });
+}
+
+async function seedPending(url, fileName, tracker) {
+    return new Promise(async (resolve, reject) => {
+        let contents = await fs.readFileSync(url);
+        let encodeTorrent = await createTorrentPromise(contents, {
+            name: fileName,
+            private: true,
+            announce: tracker,
+        });
+        let parsedTorrent = parseTorrent(encodeTorrent);
+        let getTorrent = await client.get(parsedTorrent.infoHash);
+        if (getTorrent != null) {
+            console.log("already seed", getTorrent.magnetURI);
+            resolve(parsedTorrent);
+        } else {
+            client.seed(contents, {
+                name: fileName,
+                private: true,
+                announce: tracker,
+            }, torrent => {
+                console.log(`seed done - ${torrent.infoHash} - name - ${fileName}`);
+                resolve(torrent);
+            });
+        }
     });
 }

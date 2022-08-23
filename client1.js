@@ -9,7 +9,7 @@ const path = require("path");
 const appDir = path.dirname(require.main.filename);
 const client = new WebTorrent(requiredOpts);
 console.log("client.peerId", client.peerId);
-client.seed(`${appDir}/readFile.js`, {
+client.seed(`/Users/admin/Desktop/This-pc/orai/kawaiiverse-bittorrent-be/1950.png`, {
     private: true,
     announce: ["tracker.kawaii.global/stats"],
 }, torrent => {

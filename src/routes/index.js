@@ -29,5 +29,9 @@ router.post('/v1/request-seed', [
 router.post('/v1/request-seed-server-to-server', [
     body('magnet_url').notEmpty().isString().withMessage('magnet empty'),
 ], seedFileController.seedFileServerToServer);
+
+router.post('/v1/request-seed-backup', [
+    body('magnet_url').notEmpty().isString().withMessage('magnet empty'),
+], seedFileController.seedBackup);
 module.exports = router;
 

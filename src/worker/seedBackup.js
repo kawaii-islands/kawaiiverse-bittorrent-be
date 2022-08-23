@@ -9,39 +9,56 @@ const axios = require('axios');
 async function listFiles() {
     const [files] = await storage.bucket(bucketName).getFiles();
 
-    for (let i = 0; i < files.length; i++) {
+    for (let i = 10; i < files.length; i++) {
         console.log(`seed - ${i}/${files.length}`);
         let file = files[i];
         let fileHash = file.name.substring(0, file.name.indexOf("/"));
-        let fileName = file.name.substring(file.name.indexOf("/") + 1, file.name.length);
-        let notInfoFile = fileHash + "info.json";
-        if (notInfoFile != file.name) {
-            let fileInFolder = await storage.bucket(bucketName).getFiles(`prefix=${fileHash}`);
+        let notInfoFile = fileHash + "/info.json";
+
+        if (notInfoFile !== file.name) {
+
+            let fileName = file.name.substring(file.name.indexOf("/") + 1, file.name.length);
+            console.log(fileName);
+            let isExists = await storage.bucket(bucketName).file(`${fileHash}/info.json`).exists();
             console.log("fileHash", fileHash);
             console.log("fileName", fileName);
-            var data = new FormData();
-            if (fileInFolder.length == 1) {
+
+            let data = new FormData();
+
+            if (isExists[0] == false) {
                 let contents = await file.download();
                 data.append('file', contents[0]);
                 data.append('tracker', '[]');
                 data.append('name', fileName);
-                let config = {
-                    method: 'post',
-                    url: 'http://127.0.0.1:9000/v1/request-seed-backup',
-                    headers: {
-                        ...data.getHeaders(),
-                    },
-                    maxContentLength: Infinity,
-                    maxBodyLength: Infinity,
-                    data: data,
-                };
-                let resp = await axios(config);
-                console.log(`done seed backup ${JSON.stringify(resp.data.data)}`);
+            } else {
+                let info = await storage.bucket(bucketName).file(`${fileHash}/info.json`);
+                let download = await info.download();
+                let tracker = JSON.parse(download[0].toString())
+                data.append('tracker', `${JSON.stringify(tracker.tracker)}`);
+
+                let contents = await file.download();
+                data.append('file', contents[0]);
+                data.append('name', fileName);
             }
+
+            let config = {
+                method: 'post',
+                url: 'http://127.0.0.1:9000/v1/request-seed-backup',
+                headers: {
+                    ...data.getHeaders(),
+                },
+                maxContentLength: Infinity,
+                maxBodyLength: Infinity,
+                data: data,
+            };
+            console.log(`req to server`);
+            let resp = await axios(config);
+            console.log(`done seed backup ${JSON.stringify(resp.data.data)}`);
         }
     }
-    console.log("done");
 
+
+    console.log("done");
 }
 
-listFiles().catch(console.error);
+listFiles();

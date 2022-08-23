@@ -176,6 +176,7 @@ async function addPending(req, url, parseManet) {
 }
 
 async function seedPending(url, infoFile) {
+    console.log(`start`);
     return new Promise(async (resolve, reject) => {
         let contents = await fs.readFileSync(url);
         let encodeTorrent = await createTorrentPromise(contents, {
@@ -189,14 +190,18 @@ async function seedPending(url, infoFile) {
             console.log("already seed", getTorrent.magnetURI);
             resolve(parsedTorrent);
         } else {
-            client.seed(contents, {
-                name: infoFile.name,
-                private: true,
-                announce: infoFile.tracker,
-            }, torrent => {
-                console.log(`seed done - ${torrent.infoHash} - name - ${infoFile.name}`);
-                resolve(torrent);
-            });
+           try {
+               client.seed(contents, {
+                   name: infoFile.name,
+                   private: true,
+                   announce: infoFile.tracker,
+               }, torrent => {
+                   console.log(`seed done - ${torrent.infoHash} - name - ${infoFile.name}`);
+                   resolve(torrent);
+               });
+           }catch (e){
+               console.log(e);
+           }
         }
     });
 }

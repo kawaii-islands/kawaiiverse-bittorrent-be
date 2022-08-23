@@ -171,7 +171,6 @@ async function addPending(req, url, parseManet) {
                 req.app.io.emit(`seed-done/${torrent.infoHash}`, {msg: "success"});
             });
             resolve(torrent);
-            return
         });
     });
 }
@@ -204,6 +203,5 @@ async function seedPending(url, infoFile) {
                console.log(e);
            }
         }
-        return
     });
 }

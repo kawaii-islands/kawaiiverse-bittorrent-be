@@ -10,9 +10,9 @@ const envVarsSchema = Joi.object()
             .valid('production', 'development', 'test')
             .required(),
         PORT: Joi.number().default(3000),
-        MONGO: Joi.string()
-            .required()
-            .description('Mongo DB url'),
+        // MONGO: Joi.string()
+        //     .required()
+        //     .description('Mongo DB url'),
         // JWT_SECRET: Joi.string()
         //   .required()
         //   .description('JWT secret key'),
@@ -34,10 +34,10 @@ if (error) {
 module.exports = {
     env: envVars.NODE_ENV,
     port: envVars.PORT,
-    mongoose: {
-        url: envVars.MONGO,
-        options: { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
-    },
+    // mongoose: {
+    //     url: envVars.MONGO,
+    //     options: { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
+    // },
     // jwt: {
     //   secret: envVars.JWT_SECRET,
     //   accessExpirationMinutes: envVars.JWT_ACCESS_EXPIRATION_MINUTES,

@@ -9,9 +9,9 @@ const envVarsSchema = Joi.object()
             .valid('production', 'development', 'test')
             .required(),
         PORT: Joi.number().default(9000),
-        MONGO: Joi.string()
-            .required()
-            .description('Mongo DB url'),
+        // MONGO: Joi.string()
+        //     .required()
+        //     .description('Mongo DB url'),
     })
     .unknown();
 
@@ -24,8 +24,8 @@ if (error) {
 module.exports = {
     env: envVars.NODE_ENV,
     port: envVars.PORT,
-    mongoose: {
-        url: envVars.MONGO,
-        options: {useNewUrlParser: true, useUnifiedTopology: true},
-    },
+    // mongoose: {
+    //     url: envVars.MONGO,
+    //     options: {useNewUrlParser: true, useUnifiedTopology: true},
+    // },
 };

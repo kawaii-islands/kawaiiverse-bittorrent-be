@@ -6,18 +6,18 @@ const seedFileController = require("../controllers/seed.file.controller");
 
 const router = express.Router();
 
-router.post('/v1/gen-key-proxy', [
-        body('pk_share').notEmpty().isString().withMessage('pk_share empty'),
-        body('cipher_aes').notEmpty().isObject().withMessage('cipher_aes empty'),
-    ],
-    proxyEncryptionController.genKeyProxy);
-
-
-router.post('/v1/gen-encryption', [
-        body('rk').notEmpty().isString().withMessage('rk empty'),
-        body('obj').notEmpty().isObject().withMessage('obj empty'),
-    ],
-    proxyEncryptionController.genEncryption);
+// router.post('/v1/gen-key-proxy', [
+//         body('pk_share').notEmpty().isString().withMessage('pk_share empty'),
+//         body('cipher_aes').notEmpty().isObject().withMessage('cipher_aes empty'),
+//     ],
+//     proxyEncryptionController.genKeyProxy);
+//
+//
+// router.post('/v1/gen-encryption', [
+//         body('rk').notEmpty().isString().withMessage('rk empty'),
+//         body('obj').notEmpty().isObject().withMessage('obj empty'),
+//     ],
+//     proxyEncryptionController.genEncryption);
 
 router.post('/v1/update-google-storage',
     fileController.updateFile);

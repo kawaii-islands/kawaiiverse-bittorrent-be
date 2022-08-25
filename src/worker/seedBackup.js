@@ -9,7 +9,7 @@ const axios = require('axios');
 async function listFiles() {
     const [files] = await storage.bucket(bucketName).getFiles();
 
-    for (let i = 10; i < files.length; i++) {
+    for (let i = 0; i < files.length; i++) {
         console.log(`seed - ${i}/${files.length}`);
         let file = files[i];
         let fileHash = file.name.substring(0, file.name.indexOf("/"));

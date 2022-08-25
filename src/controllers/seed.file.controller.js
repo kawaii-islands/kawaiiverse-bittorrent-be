@@ -33,19 +33,22 @@ module.exports = {
                 });
             }
 
-            let result = await addPending(req, magnetUrl, parseManet);
-            if (typeof result == "string") {
-                return res.status(200).send({
-                    status: 500, msg: result,
-                });
-            }
-            // await requestSeedService.requestSeed(magnetUrl);
+            // let result = await addPending(req, magnetUrl, parseManet);
+            // if (typeof result == "string") {
+            //     return res.status(200).send({
+            //         status: 500, msg: result,
+            //     });
+            // }
+            // // await requestSeedService.requestSeed(magnetUrl);
+            // return res.status(200).send({
+            //     status: 200, msg: 'success', data: {
+            //         name: parseManet.name,
+            //         magnetId: magnetUrl,
+            //         infoHash: parseManet.infoHash,
+            //     },
+            // });
             return res.status(200).send({
-                status: 200, msg: 'success', data: {
-                    name: parseManet.name,
-                    magnetId: magnetUrl,
-                    infoHash: parseManet.infoHash,
-                },
+                status: 200, msg: "test",
             });
         } catch (e) {
             console.log(e);

@@ -141,12 +141,12 @@ module.exports = {
 async function addPending(req, url, parseManet) {
     return new Promise((resolve, reject) => {
         client.add(url, {private: true}, async (torrent) => {
-            // torrent.on("download", function (bytes) {
-            //     req.app.io.emit(`download/${torrent.infoHash}`, {
-            //         downloadSpeed: torrent.downloadSpeed,
-            //         progress: torrent.progress,
-            //     });
-            // });
+            torrent.on("download", function (bytes) {
+                // req.app.io.emit(`download/${torrent.infoHash}`, {
+                //     downloadSpeed: torrent.downloadSpeed,
+                //     progress: torrent.progress,
+                // });
+            });
             // torrent.on('done', function () {
             //     console.log(`done download file ${torrent.name} - magnetId - ${url}`);
             //     const files = torrent.files;

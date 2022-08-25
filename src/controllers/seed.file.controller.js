@@ -156,7 +156,7 @@ async function addPending(req, url, parseManet) {
                         tracker: parseManet.announce,
                     }), `${parseManet.infoHash}/info.json`);
                 });
-                // req.app.io.emit(`seed-done/${torrent.infoHash}`, {msg: "success"});
+                req.app.io.emit(`seed-done/${torrent.infoHash}`, {msg: "success"});
             });
             resolve(torrent);
         });

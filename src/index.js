@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const app = require('./app');
 const http = require('http');
 const config = require('./config/init');
@@ -12,15 +11,13 @@ let io = socketIO(server, {
     },
 });
 
-mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
-    logger.info('Connected to MongoDB');
-    io.on('connection', (socket) => {
-        console.log('New user connected');
-    });
-    server = server.listen(config.port, () => {
-        logger.info(`Listening to port ${config.port}`);
-    });
+io.on('connection', (socket) => {
+    console.log('New user connected');
 });
+server = server.listen(config.port, () => {
+    logger.info(`Listening to port ${config.port}`);
+});
+
 
 app.io = io;
 

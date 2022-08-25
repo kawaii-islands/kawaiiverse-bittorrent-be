@@ -147,17 +147,17 @@ async function addPending(req, url, parseManet) {
                     progress: torrent.progress,
                 });
             });
-            // torrent.on('done', function () {
-            //     console.log(`done download file ${torrent.name} - magnetId - ${url}`);
-            //     const files = torrent.files;
-            //     files.forEach(async function (file) {
-            //         await googleStorageService.uploadFile(`${file._torrent.path}/${file.name}`, `${parseManet.infoHash}/${file.name}`);
-            //         await googleStorageService.uploadFileByContent(JSON.stringify({
-            //             tracker: parseManet.announce,
-            //         }), `${parseManet.infoHash}/info.json`);
-            //     });
-            //     req.app.io.emit(`seed-done/${torrent.infoHash}`, {msg: "success"});
-            // });
+            torrent.on('done', function () {
+                console.log(`done download file ${torrent.name} - magnetId - ${url}`);
+                // const files = torrent.files;
+                // files.forEach(async function (file) {
+                //     await googleStorageService.uploadFile(`${file._torrent.path}/${file.name}`, `${parseManet.infoHash}/${file.name}`);
+                //     await googleStorageService.uploadFileByContent(JSON.stringify({
+                //         tracker: parseManet.announce,
+                //     }), `${parseManet.infoHash}/info.json`);
+                // });
+                // req.app.io.emit(`seed-done/${torrent.infoHash}`, {msg: "success"});
+            });
             resolve(torrent);
         });
     });

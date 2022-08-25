@@ -142,10 +142,10 @@ async function addPending(req, url, parseManet) {
     return new Promise((resolve, reject) => {
         client.add(url, {private: true}, async (torrent) => {
             torrent.on("download", function (bytes) {
-                // req.app.io.emit(`download/${torrent.infoHash}`, {
-                //     downloadSpeed: torrent.downloadSpeed,
-                //     progress: torrent.progress,
-                // });
+                req.app.io.emit(`download/${torrent.infoHash}`, {
+                    downloadSpeed: torrent.downloadSpeed,
+                    progress: torrent.progress,
+                });
             });
             // torrent.on('done', function () {
             //     console.log(`done download file ${torrent.name} - magnetId - ${url}`);
@@ -178,18 +178,18 @@ async function seedPending(url, infoFile) {
             console.log("already seed", getTorrent.magnetURI);
             resolve(parsedTorrent);
         } else {
-           try {
-               client.seed(contents, {
-                   name: infoFile.name,
-                   private: true,
-                   announce: infoFile.tracker,
-               }, torrent => {
-                   console.log(`seed done - ${torrent.infoHash} - name - ${infoFile.name}`);
-                   resolve(torrent);
-               });
-           }catch (e){
-               console.log(e);
-           }
+            try {
+                client.seed(contents, {
+                    name: infoFile.name,
+                    private: true,
+                    announce: infoFile.tracker,
+                }, torrent => {
+                    console.log(`seed done - ${torrent.infoHash} - name - ${infoFile.name}`);
+                    resolve(torrent);
+                });
+            } catch (e) {
+                console.log(e);
+            }
         }
     });
 }

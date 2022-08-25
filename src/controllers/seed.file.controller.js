@@ -72,21 +72,6 @@ module.exports = {
                 });
             }
             client.add(magnetUrl, {path: `${appDir}/storage`}, async (torrent) => {
-                let typeFile = torrent.name.substring(torrent.name.indexOf(".") + 1, torrent.length);
-                await fileModel.findOneAndUpdate({
-                    hashFile: torrent.infoHash,
-                    name: torrent.name,
-                }, {
-                    hashFile: torrent.infoHash,
-                    name: torrent.name,
-                    magnetId: magnetUrl,
-                    typeFile: typeFile,
-                }, {
-                    upsert: true,
-                    new: true,
-                    setDefaultsOnInsert: true,
-                });
-
                 console.log(`done download file ${torrent.name} - magnetId - ${magnetUrl}`);
             });
 

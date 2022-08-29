@@ -33,12 +33,8 @@ module.exports = {
                 });
             }
 
-            let result = await addPending(req, magnetUrl, parseManet);
-            if (typeof result == "string") {
-                return res.status(200).send({
-                    status: 500, msg: result,
-                });
-            }
+            addPending(req, magnetUrl, parseManet);
+
             // await requestSeedService.requestSeed(magnetUrl);
             return res.status(200).send({
                 status: 200, msg: 'success', data: {
@@ -136,8 +132,11 @@ module.exports = {
 };
 
 async function addPending(req, url, parseManet) {
+    console.log("start add Pending", Date.now());
     return new Promise((resolve, reject) => {
+        console.log("before add", Date.now());
         client.add(url, {private: true}, async (torrent) => {
+            console.log("after add", Date.now(), torrent.infoHash);
             torrent.on("download", function (bytes) {
                 req.app.io.emit(`download/${torrent.infoHash}`, {
                     downloadSpeed: torrent.downloadSpeed,
@@ -175,18 +174,18 @@ async function seedPending(url, infoFile) {
             console.log("already seed", getTorrent.magnetURI);
             resolve(parsedTorrent);
         } else {
-           try {
-               client.seed(contents, {
-                   name: infoFile.name,
-                   private: true,
-                   announce: infoFile.tracker,
-               }, torrent => {
-                   console.log(`seed done - ${torrent.infoHash} - name - ${infoFile.name}`);
-                   resolve(torrent);
-               });
-           }catch (e){
-               console.log(e);
-           }
+            try {
+                client.seed(contents, {
+                    name: infoFile.name,
+                    private: true,
+                    announce: infoFile.tracker,
+                }, torrent => {
+                    console.log(`seed done - ${torrent.infoHash} - name - ${infoFile.name}`);
+                    resolve(torrent);
+                });
+            } catch (e) {
+                console.log(e);
+            }
         }
     });
 }

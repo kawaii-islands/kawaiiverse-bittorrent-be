@@ -19,6 +19,7 @@ module.exports = {
     seedFile: async (req, res, next) => {
         try {
             let magnetUrl = req.body.magnet_url;
+            console.log("start seed",magnetUrl);
             let parseManet = parseMagnetUri.parseMagnet(magnetUrl);
             let getTorrent = await client.get(parseManet.infoHash);
             if (getTorrent != null) {

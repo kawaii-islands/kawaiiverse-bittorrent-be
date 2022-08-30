@@ -20,22 +20,23 @@ module.exports = {
         try {
             // console.log(req)
             let magnetUrl = req.body.magnet_url;
-            let parseManet = parseMagnetUri.parseMagnet(magnetUrl);
-            let getTorrent = await client.get(parseManet.infoHash);
-            if (getTorrent != null) {
-                req.app.io.emit(`seed-done/${parseManet.infoHash}`, {msg: "success"});
-                console.log(`already seed - ${parseManet.infoHash}`);
-                return res.status(200).send({
-                    status: 200, msg: 'success', data: {
-                        name: parseManet.name,
-                        magnetId: magnetUrl,
-                        infoHash: parseManet.infoHash,
-                    },
-                });
-            }
+            // let parseManet = parseMagnetUri.parseMagnet(magnetUrl);
+            // let getTorrent = await client.get(parseManet.infoHash);
+            // if (getTorrent != null) {
+            //     req.app.io.emit(`seed-done/${parseManet.infoHash}`, {msg: "success"});
+            //     console.log(`already seed - ${parseManet.infoHash}`);
+            //     return res.status(200).send({
+            //         status: 200, msg: 'success', data: {
+            //             name: parseManet.name,
+            //             magnetId: magnetUrl,
+            //             infoHash: parseManet.infoHash,
+            //         },
+            //     });
+            // }
 
-            client.add(magnetUrl, {private: true,path:"../storage"}, async (torrent) => {
+            client.add(Buffer.from(magnetUrl,"hex"), {private: true,path:"../storage"}, async (torrent) => {
                 torrent.on("download", function (bytes) {
+                    console.log(torrent.progress)
                     req.app.io.emit(`download/${torrent.infoHash}`, {
                         downloadSpeed: torrent.downloadSpeed,
                         progress: torrent.progress,
@@ -44,12 +45,12 @@ module.exports = {
                 torrent.on('done', function () {
                     console.log(`done download file ${torrent.name} - magnetId - ${magnetUrl}`);
                     const files = torrent.files;
-                    files.forEach(async function (file) {
-                        await googleStorageService.uploadFile(`${file._torrent.path}/${file.name}`, `${parseManet.infoHash}/${file.name}`);
-                        await googleStorageService.uploadFileByContent(JSON.stringify({
-                            tracker: parseManet.announce,
-                        }), `${parseManet.infoHash}/info.json`);
-                    });
+                    // files.forEach(async function (file) {
+                    //     // await googleStorageService.uploadFile(`${file._torrent.path}/${file.name}`, `${parseManet.infoHash}/${file.name}`);
+                    //     // await googleStorageService.uploadFileByContent(JSON.stringify({
+                    //     //     tracker: parseManet.announce,
+                    //     // }), `${parseManet.infoHash}/info.json`);
+                    // });
                     req.app.io.emit(`seed-done/${torrent.infoHash}`, {msg: "success"});
                 });
             })
@@ -62,9 +63,9 @@ module.exports = {
             // await requestSeedService.requestSeed(magnetUrl);
             return res.status(200).send({
                 status: 200, msg: 'success', data: {
-                    name: parseManet.name,
-                    magnetId: magnetUrl,
-                    infoHash: parseManet.infoHash,
+                    // name: parseManet.name,
+                    // magnetId: magnetUrl,
+                    // infoHash: parseManet.infoHash,
                 },
             });
         } catch (e) {

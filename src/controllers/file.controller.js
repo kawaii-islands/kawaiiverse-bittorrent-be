@@ -111,8 +111,13 @@ module.exports = {
 
             }
             await googleStorageService.uploadFile(`${filePath}`, `${hashFile}/${originalFilename}`);
-            return res.status(200).send({status: 200, msg: 'success', url: `https://storage.googleapis.com/storage.kawaii.global/${hashFile}/${originalFilename}`});
+            return res.status(200).send({
+                status: 200,
+                msg: 'success',
+                url: `https://storage.googleapis.com/storage.kawaii.global/${hashFile}/${originalFilename}`,
+            });
         } catch (e) {
+            console.log("e", e);
             return res.status(200).send({status: 500, msg: 'internal server'});
         }
     },

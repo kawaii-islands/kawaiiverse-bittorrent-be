@@ -5,6 +5,7 @@ const parseTorrent = require('parse-torrent');
 const client = new WebTorrent(webTorrentConfig.requiredOpts());
 const createTorrent = require('create-torrent');
 const path = require("path");
+const crypto = require("crypto");
 const {promises: fs1} = require('fs');
 const fs = require('fs');
 const appDir = path.dirname(require.main.filename);
@@ -12,6 +13,7 @@ const appDir = path.dirname(require.main.filename);
 const fileModel = require("../databases/file");
 const util = require('util');
 const requestSeedService = require('../services/requestSeed');
+const googleStorageService = require('../services/google-storage');
 
 module.exports = {
     updateFile: async (req, res, next) => {
@@ -82,6 +84,35 @@ module.exports = {
 
         } catch (e) {
             console.log(e);
+            return res.status(200).send({status: 500, msg: 'internal server'});
+        }
+    },
+    updateFileToGoogleCloud: async (req, res, next) => {
+        try {
+            let form = new formidable.IncomingForm();
+            let formData = await new Promise(
+                function (resolve, reject) {
+                    form.parse(req, (err, fields, files) => {
+                        if (err) reject(err);
+                        else resolve([fields, files]);
+                    });
+                });
+
+            let filePath;
+            let originalFilename;
+            let hashFile;
+            for (let i = 0; i < formData.length; i++) {
+                if (formData[i].hasOwnProperty('file') === true) {
+                    filePath = formData[i].file.filepath;
+                    originalFilename = formData[i].file.originalFilename;
+                    let dataFile = await fs.readFileSync(filePath);
+                    hashFile = crypto.createHash('sha256').update(dataFile).digest('hex');
+                }
+
+            }
+            await googleStorageService.uploadFile(`${filePath}`, `${hashFile}/${originalFilename}`);
+            return res.status(200).send({status: 200, msg: 'success', url: `https://storage.googleapis.com/storage.kawaii.global/${hashFile}/${originalFilename}`});
+        } catch (e) {
             return res.status(200).send({status: 500, msg: 'internal server'});
         }
     },

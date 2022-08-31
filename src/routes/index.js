@@ -33,5 +33,8 @@ router.post('/v1/request-seed-server-to-server', [
 router.post('/v1/request-seed-backup', [
     body('magnet_url').notEmpty().isString().withMessage('magnet empty'),
 ], seedFileController.seedBackup);
+
+router.post('/v1/upload-to-google-cloud'
+    , fileController.updateFileToGoogleCloud);
 module.exports = router;
 

@@ -125,7 +125,7 @@ module.exports = {
 
           const buffer = new Uint8Array(formData[0].file.split(","));
           const name = formData[0].name;
-          const fileHash = formData.fileHash;
+          const fileHash = formData[0].fileHash;
           await googleStorageService.uploadFileByContent(buffer, `${fileHash}/${name}`)
           return res.status(200).send({
               status: 200,

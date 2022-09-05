@@ -98,23 +98,14 @@ module.exports = {
                     });
                 });
 
-            let filePath;
-            let originalFilename;
-            let hashFile;
-            for (let i = 0; i < formData.length; i++) {
-                if (formData[i].hasOwnProperty('file') === true) {
-                    filePath = formData[i].file.filepath;
-                    originalFilename = formData[i].file.originalFilename;
-                    let dataFile = await fs.readFileSync(filePath);
-                    hashFile = crypto.createHash('sha256').update(dataFile).digest('hex');
-                }
-
-            }
-            await googleStorageService.uploadFile(`${filePath}`, `${hashFile}/${originalFilename}`);
+            const buffer = new Uint8Array(formData[0].file.split(","));
+            const name = formData[0].name;
+            const fileHash = crypto.createHash('sha256').update(buffer).digest('hex');
+            await googleStorageService.uploadFileByContent(buffer, `${fileHash}/${name}`)
             return res.status(200).send({
                 status: 200,
                 msg: 'success',
-                url: `https://storage.googleapis.com/storage.kawaii.global/${hashFile}/${originalFilename}`,
+                url: `https://storage.googleapis.com/storage.kawaii.global/${fileHash}/${name}`,
             });
         } catch (e) {
             console.log("e", e);

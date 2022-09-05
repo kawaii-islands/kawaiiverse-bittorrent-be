@@ -35,6 +35,8 @@ router.post('/v1/request-seed-backup', [
 ], seedFileController.seedBackup);
 
 router.post('/v1/upload-to-google-cloud'
-    , fileController.updateFileToGoogleCloud);
+    , fileController.uploadFileToGoogleCloud);
+router.post('/v1/upload-torrent-to-google-cloud'
+    , fileController.uploadTorrentFileToGoogleCloud);
 module.exports = router;
 

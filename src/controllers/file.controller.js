@@ -87,7 +87,7 @@ module.exports = {
             return res.status(200).send({status: 500, msg: 'internal server'});
         }
     },
-    updateFileToGoogleCloud: async (req, res, next) => {
+    uploadFileToGoogleCloud: async (req, res, next) => {
         try {
             let form = new formidable.IncomingForm();
             let formData = await new Promise(
@@ -112,6 +112,31 @@ module.exports = {
             return res.status(200).send({status: 500, msg: 'internal server'});
         }
     },
+    uploadTorrentFileToGoogleCloud: async (req, res, next) => {
+      try {
+          let form = new formidable.IncomingForm();
+          let formData = await new Promise(
+              function (resolve, reject) {
+                  form.parse(req, (err, fields, files) => {
+                      if (err) reject(err);
+                      else resolve([fields, files]);
+                  });
+              });
+
+          const buffer = new Uint8Array(formData[0].file.split(","));
+          const name = formData[0].name;
+          const fileHash = formData.fileHash;
+          await googleStorageService.uploadFileByContent(buffer, `${fileHash}/${name}`)
+          return res.status(200).send({
+              status: 200,
+              msg: 'success',
+              url: `https://storage.googleapis.com/storage.kawaii.global/${fileHash}/${name}`,
+          });
+      } catch (e) {
+          console.log("e", e);
+          return res.status(200).send({status: 500, msg: 'internal server'});
+      }
+  },
 };
 
 async function seedPending(url) {

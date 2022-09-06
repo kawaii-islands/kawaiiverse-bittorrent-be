@@ -97,15 +97,15 @@ module.exports = {
                         else resolve([fields, files]);
                     });
                 });
-
-            const buffer = new Uint8Array(formData[0].file.split(","));
-            const name = formData[0].name;
-            const fileHash = crypto.createHash('sha256').update(buffer).digest('hex');
-            await googleStorageService.uploadFileByContent(buffer, `${fileHash}/${name}`)
+            const filePath = formData[1].file.filepath;
+            const originalFilename = formData[1].file.originalFilename;
+            let dataFile = await fs.readFileSync(filePath);
+            const fileHash = crypto.createHash('sha256').update(dataFile).digest('hex');
+            await googleStorageService.uploadFile(filePath, `${fileHash}/${originalFilename}`)
             return res.status(200).send({
                 status: 200,
                 msg: 'success',
-                url: `https://storage.googleapis.com/storage.kawaii.global/${fileHash}/${name}`,
+                url: `https://storage.googleapis.com/storage.kawaii.global/${fileHash}/${originalFilename}`,
             });
         } catch (e) {
             console.log("e", e);
@@ -122,11 +122,10 @@ module.exports = {
                       else resolve([fields, files]);
                   });
               });
-
-          const buffer = new Uint8Array(formData[0].file.split(","));
-          const name = formData[0].name;
           const fileHash = formData[0].fileHash;
-          await googleStorageService.uploadFileByContent(buffer, `${fileHash}/${name}`)
+          const filePath = formData[1].file.filepath;
+          const name = formData[0].name;
+          await googleStorageService.uploadFile(filePath, `${fileHash}/${name}`)
           return res.status(200).send({
               status: 200,
               msg: 'success',

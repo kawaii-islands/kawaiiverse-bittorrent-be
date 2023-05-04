@@ -1,21 +1,27 @@
-var requiredOpts = {
-    announce: [], // list of tracker server urls
-    dht: false,
-};
+import WebTorrent from "webtorrent-hybrid";
 
-
-const WebTorrent = require("webtorrent-hybrid");
-const path = require("path");
-const appDir = path.dirname(require.main.filename);
-const client = new WebTorrent(requiredOpts);
-console.log("client.peerId", client.peerId);
-client.seed(`/Users/admin/Desktop/This-pc/orai/kawaiiverse-bittorrent-be/image0 (1).jpeg`, {
-    private: true,
-    announce: [
-        "wss://tracker.kawaii.global",
-        "https://tracker.kawaii.global/announce",
-    ],
-}, torrent => {
-    console.log('torrentId (info hash):', torrent.magnetURI);
-    console.log('torrentId (magnet link):', torrent.infoHash);
+const client = new WebTorrent({
+    dht:true,
+    peerId: "2d5757303130392d664974732b64434166436176",
+    nodeId: "c5489a950cbbc8639b10313263bd60378e6b8cdf",
 });
+console.log("peerId", client.peerId);
+console.log("node", client.nodeId);
+
+async function seedFile() {
+    let filePath = Buffer.from("canhtuan", 'utf-8');
+    filePath.name = "canhtuan.txt";
+    console.log("filePath",filePath);
+    client.seed(filePath,
+        {
+            announce: ["http://localhost:8000/announce"],
+        },
+        (torrent) => {
+            console.log("torrent", torrent.magnetURI);
+        },
+    );
+}
+
+
+
+seedFile();

@@ -1,21 +1,28 @@
-var requiredOpts = {
-    infoHash: new Buffer('012345678901234567890'), // hex string or Buffer
-    peerId: new Buffer('01234567890123456789'), // hex string or Buffer
-    announce: [], // list of tracker server urls
-    dht: false
+import WebTorrent from "webtorrent-hybrid";
+
+const client = new WebTorrent({
+    dht: false,
+});
+console.log("peerId", client.peerId);
+
+async function seedFile() {
+    let filePath = "/Users/admin/Desktop/This-pc/orai/kawaiiverse-bittorrent-be/1.png";
+
+    client.seed(filePath,
+        {
+            private: true,
+            announce: ["wss://tracker.eueno.io", "https://tracker.eueno.io/announce", "http://localhost:8000/announce"],
+            urlList: ["https://storage.googleapis.com/data.eueno.io/test/1.png"],
+            getAnnounceOpts: () => {
+                return {
+                    "x-api-key": "ahihi",
+                };
+            },
+        },
+        (torrent) => {
+            console.log("torrent", torrent.infoHash);
+        },
+    );
 }
 
-
-const WebTorrent = require("webtorrent-hybrid");
-const path = require("path");
-const appDir = path.dirname(require.main.filename);
-const client = new WebTorrent(requiredOpts);
-
-console.log("client.peerId",client.peerId);
-client.seed(`${appDir}/1.png`, {
-    private: true,
-    announce: ["http://localhost:8000/announce", "http://localhost:8000/stats", "ws://localhost:8000"],
-}, torrent => {
-    // console.log('torrentId (info hash):', torrent)
-    console.log('torrentId (magnet link):', torrent.infoHash);
-});
+seedFile();

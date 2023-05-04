@@ -3885,7 +3885,7 @@ webtorrent-cli@^4.0.0:
 
 webtorrent-hybrid@^5.0.2:
   version "5.0.2"
-  resolved "https://registry.npmjs.org/webtorrent-hybrid/-/webtorrent-hybrid-5.0.2.tgz"
+  resolved "https://registry.yarnpkg.com/webtorrent-hybrid/-/webtorrent-hybrid-5.0.2.tgz#0d131d93877be4dc6ef477630130122cc378d167"
   integrity sha512-B2bOQ2sXbe9GqNeBEPX3YxGUjxQPuAKXBq3OBr5BNVkZ2HtptAO+cDeV8cvePQ5nVEebq3ZRVWaOFTx5dh/ORg==
   dependencies:
     create-torrent "^5.0.0"

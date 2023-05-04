@@ -1,27 +1,9 @@
 import WebTorrent from "webtorrent-hybrid";
 
-const client = new WebTorrent({
-    dht:true,
-    peerId: "2d5757303130392d664974732b64434166436176",
-    nodeId: "c5489a950cbbc8639b10313263bd60378e6b8cdf",
+const client = new WebTorrent();
+
+const torrentId = 'magnet:?xt=urn:btih:a656ddccefd0207e6a5c5ea04c29d40271c77102&dn=1GB&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337';
+
+client.add(torrentId, {path: "/Users/admin/Desktop/This-pc/orai/kawaiiverse-bittorrent-be"}, (torrent) => {
+    console.log("torrent", torrent);
 });
-console.log("peerId", client.peerId);
-console.log("node", client.nodeId);
-
-async function seedFile() {
-    let filePath = Buffer.from("canhtuan", 'utf-8');
-    filePath.name = "canhtuan.txt";
-    console.log("filePath",filePath);
-    client.seed(filePath,
-        {
-            announce: ["http://localhost:8000/announce"],
-        },
-        (torrent) => {
-            console.log("torrent", torrent.magnetURI);
-        },
-    );
-}
-
-
-
-seedFile();

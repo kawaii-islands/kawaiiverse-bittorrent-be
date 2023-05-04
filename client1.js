@@ -6,6 +6,11 @@ const torrentId = 'magnet:?xt=urn:btih:a656ddccefd0207e6a5c5ea04c29d40271c77102&
 let start = Date.now();
 console.log("start", start);
 client.add(torrentId, {path: "/Users/admin/Desktop/This-pc/orai/kawaiiverse-bittorrent-be"}, (torrent) => {
-    console.log("torrent", torrent);
+    torrent.on('download', function (bytes) {
+        console.log('just downloaded: ' + bytes);
+        console.log('total downloaded: ' + torrent.downloaded);
+        console.log('download speed: ' + torrent.downloadSpeed);
+        console.log('progress: ' + torrent.progress);
+    });
     console.log(`took ${Date.now() - start}`);
 });
